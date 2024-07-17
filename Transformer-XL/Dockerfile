@@ -11,4 +11,4 @@ COPY transformer-xl/getdata.sh /app/transformer-xl
 
 RUN bash getdata.sh
 
-RUN bash run_wt103_base.sh train --work_dir /app
+ENTRYPOINT ["bash", "run_wt103_base.sh", "train", "--work_dir", "/app"]
