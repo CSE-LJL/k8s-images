@@ -7,4 +7,6 @@ COPY --r very-deep-convnets-raw-waveforms /app/very-deep-convnets-raw-waveforms
 
 RUN pip3 install -r requirements.txt
 
-RUN export CUDA_VISIBLE_DEVICES=1; python3 -u model_run.py m5 > m5.out
+RUN export CUDA_VISIBLE_DEVICES=1
+
+ENTRYPOINT ["python3", "-u", "model_run.py", "m5", ">", "m5.out"]
