@@ -5,6 +5,6 @@ RUN python -m pip install --upgrade pip \
 WORKDIR /app
 COPY TextClassification-master.zip /app
 
-RUN unzip TextClassification-master.zip
+RUN unzip /app/TextClassification-master.zip
 
-ENTRYPOINT [ "python", "-u","/app/Lstm.py" ]
+ENTRYPOINT [ "python", "-u","/app/TextClassification-master/main.py" ]
