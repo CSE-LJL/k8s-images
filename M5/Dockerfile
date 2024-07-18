@@ -1,12 +1,12 @@
-FROM tensorflow/tensorflow:1.0.1-gpu-py3
-
-RUN git clone https://github.com/philipperemy/very-deep-convnets-raw-waveforms/tree/master
+FROM tensorflow/tensorflow:1.0.0-gpu-py3
 
 WORKDIR /app
-COPY --r very-deep-convnets-raw-waveforms /app/very-deep-convnets-raw-waveforms
+COPY very-deep-convnets-raw-waveforms.zip /app
 
-RUN pip3 install -r requirements.txt
+RUN unzip /app/very-deep-convnets-raw-waveforms.zip
 
 RUN export CUDA_VISIBLE_DEVICES=1
 
-ENTRYPOINT ["python3", "-u", "model_run.py", "m5", ">", "m5.out"]
+CMD ["pip3", "install", "-r", "/app/very-deep-convnets-raw-waveforms/requirements.txt"]
+
+ENTRYPOINT ["python3", "-u", "/app/very-deep-convnets-raw-waveforms/model_run.py", "m5", ">", "m5.out"]
