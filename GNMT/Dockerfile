@@ -2,10 +2,10 @@ FROM tensorflow/tensorflow:nightly-gpu
 RUN python -m pip install --upgrade pip \
 && pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 
-RUN unzip nmt.zip
-
 WORKDIR /app
-COPY nmt /app/nmt
+COPY nmt.zip /app
+
+RUN unzip /app/nmt.zip
 
 RUN mkdir /tmp/nmt_data
 RUN mkdir /tmp/nmt_model
