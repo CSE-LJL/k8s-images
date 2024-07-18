@@ -5,7 +5,7 @@ RUN python -m pip install --upgrade pip \
 RUN git clone https://github.com/tensorflow/nmt/
 
 WORKDIR /app
-COPY --r nmt /app/nmt
+COPY nmt /app/nmt
 
 RUN mkdir /tmp/nmt_data
 RUN mkdir /tmp/nmt_model
