@@ -1,4 +1,4 @@
-FROM tensorflow/tensorflow:1.4.0-gpu-py3
+FROM tensorflow/tensorflow:nightly-gpu
 RUN python -m pip install --upgrade pip \
 && pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 
