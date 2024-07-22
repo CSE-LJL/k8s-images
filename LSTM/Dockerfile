@@ -2,13 +2,15 @@ FROM pytorch/pytorch:2.1.0-cuda11.8-cudnn8-runtime
 RUN python -m pip install --upgrade pip
 RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 
-RUN apt-get install unzip
-
-RUN apt-get install git
-
 WORKDIR /app
-COPY TextClassification-master.zip /app
+RUN mkdir /app/data
 
-RUN unzip /app/TextClassification-master.zip
+COPY dev.csv /app/data
+COPY train.csv /app/data
+COPY test.csv /app/data
 
-ENTRYPOINT [ "python", "-u","/app/TextClassification-master/main.py" ]
+COPY config.py /app
+COPY entity.py /app
+COPY main.py /app
+
+ENTRYPOINT [ "python", "-u","/app/main.py" ]
