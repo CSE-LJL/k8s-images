@@ -1,4 +1,4 @@
-FROM tensorflow/tensorflow:1.0.0-gpu-py3
+FROM tensorflow/tensorflow:1.0.1-gpu-py3
 RUN python -m pip install --upgrade pip
 RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 
