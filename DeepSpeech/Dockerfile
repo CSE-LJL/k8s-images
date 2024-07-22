@@ -46,6 +46,7 @@ USER ubuntu
 WORKDIR /home/ubuntu
 
 #- Install Python packages -----------------------------------------------------
+RUN unzip deepspeech-master.zip
 ARG WHEELDIR=/home/ubuntu/.cache/pip/wheels
 COPY --chown=ubuntu:ubuntu deps deps
 COPY --chown=ubuntu:ubuntu requirements.txt requirements.txt
@@ -79,7 +80,6 @@ RUN cd /home/ubuntu/deps/kenlm && \
 RUN sudo rm -rf deps
 
 #- Install deepspeech package --------------------------------------------------
-RUN unzip deepspeech-master.zip
 COPY --chown=ubuntu:ubuntu . deepspeech-master
 RUN pip3 install deepspeech-master
 RUN rm -rf deepspeech-master
