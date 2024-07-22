@@ -1,5 +1,5 @@
 FROM seannaren/deepspeech.pytorch:latest
 
-RUN cd data/ && python librispeech.py && cd ..
+RUN cd data/ && python common_voice.py && cd ..
 
-ENTRYPOINT ["python", "train.py", "+configs=librispeech"]
+ENTRYPOINT ["python", "train.py", "+configs=commonvoice"]
