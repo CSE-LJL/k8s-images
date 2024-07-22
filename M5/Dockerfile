@@ -1,4 +1,5 @@
 FROM tensorflow/tensorflow:1.0.0-gpu-py3
+RUN apt-get install unzip && apt-get install git
 
 WORKDIR /app
 
