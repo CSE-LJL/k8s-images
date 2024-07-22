@@ -80,9 +80,9 @@ RUN sudo rm -rf deps
 
 #- Install deepspeech package --------------------------------------------------
 RUN unzip deepspeech-master.zip
-COPY --chown=ubuntu:ubuntu . deepspeech-master/deepspeech
-RUN pip3 install deepspeech-master/deepspeech/
-RUN rm -rf deepspeech-master/deepspeech
+COPY --chown=ubuntu:ubuntu . deepspeech-master
+RUN pip3 install deepspeech-master
+RUN rm -rf deepspeech-master
 
 #- Setup Jupyter ---------------------------------------------------------------
 EXPOSE 9999
