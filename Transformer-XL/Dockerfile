@@ -3,7 +3,9 @@ FROM pytorch/pytorch:2.1.0-cuda11.8-cudnn8-runtime
 RUN python -m pip install --upgrade pip
 RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 
-RUN apt-get install unzip && apt-get install git
+RUN apt-get install unzip
+
+RUN apt-get install git
 
 WORKDIR /app
 COPY transformer-xl-master.zip /app
