@@ -2,7 +2,9 @@ FROM tensorflow/tensorflow:1.0.1-gpu-py3
 RUN python -m pip install --upgrade pip
 RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 
-RUN apt-get install unzip && apt-get install git
+RUN apt-get install unzip
+
+RUN apt-get install git
 
 WORKDIR /app
 
