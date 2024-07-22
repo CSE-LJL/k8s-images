@@ -9,6 +9,7 @@ RUN apt-get update && \
                     build-essential \
                     cmake \
                     git \
+                    unzip \
                     libboost-program-options-dev \
                     libboost-system-dev \
                     libboost-test-dev \
@@ -78,9 +79,10 @@ RUN cd /home/ubuntu/deps/kenlm && \
 RUN sudo rm -rf deps
 
 #- Install deepspeech package --------------------------------------------------
-COPY --chown=ubuntu:ubuntu . deepspeech
-RUN pip3 install deepspeech/
-RUN rm -rf deepspeech
+RUN unzip deepspeech-master.zip
+COPY --chown=ubuntu:ubuntu . deepspeech-master/deepspeech
+RUN pip3 install deepspeech-master/deepspeech/
+RUN rm -rf deepspeech-master/deepspeech
 
 #- Setup Jupyter ---------------------------------------------------------------
 EXPOSE 9999
