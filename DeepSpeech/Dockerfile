@@ -47,6 +47,9 @@ WORKDIR /home/ubuntu
 
 #- Install Python packages -----------------------------------------------------
 RUN unzip deepspeech-master.zip
+RUN git clone --recursive git@github.com:parlance/ctcdecode.git deps/ctcdecode
+RUN git clone git@github.com:kpu/kenlm.git deps/kenlm
+RUN git clone git@github.com:t-vi/warp-ctc.git deps/warp-ctc
 ARG WHEELDIR=/home/ubuntu/.cache/pip/wheels
 COPY --chown=ubuntu:ubuntu deps deps
 COPY --chown=ubuntu:ubuntu requirements.txt requirements.txt
