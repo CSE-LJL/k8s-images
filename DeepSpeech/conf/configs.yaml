@@ -1,0 +1,58 @@
+dataset:
+  vivos_root: D:\NCKH 2022\vivos
+  vlsp_root: ...
+  n_fft: 400
+
+text:
+  tokenizer: bpe
+  character:
+    lang: "vi"
+  bpe:
+    params:
+      vocab_size: 1000
+      pct_bpe: 1
+      ngram_min: 2
+      ngram_max: 2
+      required_tokens: ["__blank"]
+    is_train: False
+    in_path: "D:\\NCKH 2022\\deepspeech-ctc\\vocab.json"
+
+datamodule:
+  batch_size: 8
+
+model:
+  lr: 0.0001
+  n_feature: 201 # n_fft // 2 + 1
+  n_hidden: 2048
+  dropout: 0.1
+
+optimizer:
+  momentum: 0.99
+  nesterov: True
+
+logger:
+  save_dir: loggers
+  name: deepspeech
+
+trainer:
+  max_epochs: 100
+  accelerator: auto
+  detect_anomaly: True
+  accumulate_grad_batches: 8
+
+session:
+  train: False
+  validate: True
+  test: False
+
+ckpt:
+  have_ckpt: True
+  ckpt_path: https://github.com/tuanio/deepspeech-ctc/releases/download/deepspeech/epoch.978-step.102863.ckpt
+
+decoder:
+  type: greedy # beamsearch
+  ctcdecoder:
+    alpha: 0.5
+    beta: 0.96
+    beam_size: 100
+    kenlm_path: r"C:\Users\nvatu\Downloads\6-gram-lm.binary"
