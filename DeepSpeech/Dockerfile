@@ -25,7 +25,7 @@ RUN apt-get update && \
                     vim && \
     rm -rf /var/lib/apt/lists
 
-RUN pip install -r requirements.txt
+RUN pip3 install -r requirements.txt
 
 WORKDIR /app
 RUN git clone --recursive https://github.com/parlance/ctcdecode.git
