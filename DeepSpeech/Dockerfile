@@ -32,9 +32,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /
-RUN git clone $DEEPSPEECH_REPO DeepSpeech && \
-    cd /DeepSpeech && git fetch origin $DEEPSPEECH_SHA && git checkout $DEEPSPEECH_SHA && \
-    git submodule sync kenlm/ && git submodule update --init kenlm/
+RUN git clone https://github.com/mozilla/DeepSpeech DeepSpeech && \
+    cd /DeepSpeech && git submodule sync kenlm/ && git submodule update --init kenlm/
 
 # Build CTC decoder first, to avoid clashes on incompatible versions upgrades
 RUN cd /DeepSpeech/native_client/ctcdecode && make NUM_PROCESSES=$(nproc) bindings && \
