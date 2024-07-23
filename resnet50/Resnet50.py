@@ -8,7 +8,7 @@ from torchvision.models import resnet50
 import torch.optim as optim
 import torch.nn as nn
 import time
-epochs = 10
+epochs = 100
 batch_size = 64
 
 def train_single_gpu():
