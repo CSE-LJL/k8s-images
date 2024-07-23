@@ -136,7 +136,7 @@ optimizer = torch.optim.Adam(model.parameters())
 
 print(len(train_data))
 print(len(test_data))
-epochs = 5
+epochs = 100
 for epoch in range(epochs):
     running_loss = 0.0
     running_correct = 0.0
