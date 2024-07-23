@@ -117,7 +117,7 @@ def _make_divisible(ch, divisor=8, min_ch=None):
 
 if __name__ == '__main__':
     # 模型实例化
-    epochs = 10
+    epochs = 100
     batch_size = 64
     net = MobileNetV2(num_classes=10)
     # 构造输入层shape==[4,3,224,224]
