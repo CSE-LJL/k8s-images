@@ -229,6 +229,7 @@ if __name__ == '__main__':
     # 模型实例化
     epochs = 100
     batch_size = 64
+    device = 'cuda:1'
     net = ShuffleNetV2(num_classes=10)
     # 构造输入层shape==[4,3,224,224]
     cifar_path = "data/"
