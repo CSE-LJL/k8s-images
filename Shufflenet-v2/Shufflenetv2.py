@@ -1,4 +1,5 @@
 import torch
+import torchvision
 import torch.nn as nn
 from torchstat import stat  # 查看网络参数
 from torchvision import transforms
