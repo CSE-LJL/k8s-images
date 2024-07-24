@@ -1,9 +1,12 @@
 FROM pytorch/pytorch:1.11.0-cuda11.3-cudnn8-runtime
 
 WORKDIR /app
-COPY Mobilenetv2.py /app/Mobilenetv2.py
+COPY latency.py /app/latency.py
+COPY models.py /app/models.py
+COPY test.py /app/test.py
+COPY train.py /app/train.py
 
 RUN pip install torchvision \
-    && pip install matplotlib
+    && pip install future==0.18.2
 
-ENTRYPOINT [ "python", "-u","/app/Mobilenetv2.py" ]
+ENTRYPOINT [ "python", "-u","/app/train.py" ]
