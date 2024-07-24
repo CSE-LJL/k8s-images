@@ -26,4 +26,4 @@ COPY vocabulary.py /app/utils
 
 CMD ["bash", "/app/getdata.sh", "wikitext-103"]
 
-ENTRYPOINT ["bash", "run_wt103_base.sh", "train", "--work_dir", "/app/pytorch"]
+ENTRYPOINT ["bash", "/app/run_wt103_base.sh", "train", "--work_dir", "/app/pytorch"]
