@@ -4,6 +4,6 @@ WORKDIR /app
 COPY Shufflenetv2.py /app/Shufflenetv2.py
 
 RUN pip install torchvision \
-    && pip install matplotlib
+    && pip install torchstat
 
 ENTRYPOINT [ "python", "-u","/app/Shufflenetv2.py" ]
