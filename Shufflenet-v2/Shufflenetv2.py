@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from torchstat import stat  # 查看网络参数
-import torchvision as torchvision
+import torchvision
 import torchvision.transforms as transforms
 
 # --------------------------------- #
@@ -239,6 +239,7 @@ if __name__ == '__main__':
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
         ]
     )
+    import torchvision
     trainset = torchvision.datasets.CIFAR10(
         root=cifar_path, train=True, download=True, transform=transform
     )
