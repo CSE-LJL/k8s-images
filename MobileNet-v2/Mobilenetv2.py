@@ -1,162 +1,129 @@
+import os
 import torch
 import torch.nn as nn
+import torch.optim as optim
+from torchvision import datasets, transforms
+import numpy as np
+import argparse
+import time
+from models import *
 
-class ConvBNReLU(nn.Sequential):
-    def __init__(self, in_channel, out_channel, kernel_size=3, stride=1, groups=1):
-        padding = (kernel_size - 1) // 2
-        super(ConvBNReLU, self).__init__(
-            nn.Conv2d(in_channel, out_channel, kernel_size, stride, padding, groups=groups, bias=False),
-            nn.BatchNorm2d(out_channel),
-            nn.ReLU6(inplace=True)
-        )
+#parse arguments
+parser = argparse.ArgumentParser(description='Mobilenet v3 training')
+parser.add_argument('--model', type=str, default='small', help='large or small (small by default)')
+parser.add_argument('--width', type=float, default=1.0, help='width multiplier (1.0 by default)')
+parser.add_argument('--iter', type=int, default=20, help='number of iterations to train (20 by default)')
+parser.add_argument('--batch', type=int, default=128, help='batch size (128 by default)')
+args = parser.parse_args()
 
+#define transformations
+CIFAR100_MEANS = (0.5071, 0.4865, 0.4409) #precomputed channel means of CIFAR100(train) for normalization
+CIFAR100_STDS = (0.2673, 0.2564, 0.2762) #precomputed standard deviations
+transformations = {
+    'train': transforms.Compose([
+        transforms.RandomCrop(32, padding=4),
+        transforms.RandomHorizontalFlip(),
+        transforms.ToTensor(),
+        transforms.Normalize(CIFAR100_MEANS, CIFAR100_STDS)
+    ]),
+    'val': transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize(CIFAR100_MEANS, CIFAR100_STDS)
+    ])
+}
 
-class InvertedResidual(nn.Module):
-    def __init__(self, in_channel, out_channel, stride, expand_ratio):
-        super(InvertedResidual, self).__init__()
-        hidden_channel = in_channel * expand_ratio
-        self.use_shortcut = stride == 1 and in_channel == out_channel
+#load datasets and define loaders
+data_path = 'cifar100'
+cifar100 = datasets.CIFAR100(data_path, train=True, download=True, transform=transformations['train'])
+cifar100_val = datasets.CIFAR100(data_path, train=False, download=True, transform=transformations['val'])
+train_loader = torch.utils.data.DataLoader(cifar100, batch_size=args.batch, shuffle=True, pin_memory=True, drop_last=True)
+val_loader = torch.utils.data.DataLoader(cifar100_val, batch_size=args.batch, shuffle=False, pin_memory=True, drop_last=True)
 
-        layers = []                          # 定义层列表
-        if expand_ratio != 1:
-            # 1x1 pointwise conv
-            layers.append(ConvBNReLU(in_channel, hidden_channel, kernel_size=1))
-        layers.extend([
-            # 3x3 depthwise conv
-            ConvBNReLU(hidden_channel, hidden_channel, stride=stride, groups=hidden_channel),
-            # 1x1 pointwise conv(linear)
-            nn.Conv2d(hidden_channel, out_channel, kernel_size=1, bias=False),
-            nn.BatchNorm2d(out_channel),
-        ])
+#choose model to train
+if args.model == 'large':
+    model = Mobilenet_v3_large(args.width)
+else:
+    model = Mobilenet_v3_small(args.width)
 
-        self.conv = nn.Sequential(*layers)
+#number of iterations
+n_epochs = args.iter
 
-    def forward(self, x):
-        if self.use_shortcut:
-            return x + self.conv(x)
-        else:
-            return self.conv(x)
+#optimizer and scheduler
+optimizer = optim.SGD(model.parameters(), lr=0.1, momentum=0.9)
+scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[15, 20, 30], gamma=0.1)
 
+#loss function (standard cross-entropy taking logits as inputs)
+loss_fn = nn.CrossEntropyLoss()
 
-class MobileNetV2(nn.Module):
-    def __init__(self, num_classes=1000, alpha=1.0, round_nearest=8):
-        super(MobileNetV2, self).__init__()
-        block = InvertedResidual
-        input_channel = _make_divisible(32 * alpha, round_nearest)          # 将卷积核个数调整到最接近8的整数倍数
-        last_channel = _make_divisible(1280 * alpha, round_nearest)
+#train on GPU if CUDA is available, else on CPU
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+model = model.to(device)
 
-        inverted_residual_setting = [
-            # t, c, n, s
-            [1, 16, 1, 1],
-            [6, 24, 2, 2],
-            [6, 32, 3, 2],
-            [6, 64, 4, 2],
-            [6, 96, 3, 1],
-            [6, 160, 3, 2],
-            [6, 320, 1, 1],
-        ]
+#print training information
+print("")
+if torch.cuda.is_available():
+    hardware = "GPU " + str(device) 
+else:
+    hardware = "CPU (CUDA was not found)" 
+print("Training information:")
+print("model:", model.name())
+print("hardware:", hardware)
+print("iterations:", n_epochs)
+print("width multiplier:", args.width)
+print("batch size:", args.batch)
+print("")
 
-        features = []
-        # conv1 layer
-        features.append(ConvBNReLU(3, input_channel, stride=2))
-        # building inverted residual residual blockes
-        for t, c, n, s in inverted_residual_setting:
-            output_channel = _make_divisible(c * alpha, round_nearest)
-            for i in range(n):
-                stride = s if i == 0 else 1
-                features.append(block(input_channel, output_channel, stride, expand_ratio=t))
-                input_channel = output_channel
-        # building last several layers
-        features.append(ConvBNReLU(input_channel, last_channel, 1))
-        # combine feature layers
-        self.features = nn.Sequential(*features)
+#training loop
+lowest_val_loss = np.inf #used for saving the best model with lowest validation loss
+for epoch in range(1, n_epochs+1):
+    #train model
+    start_time = time.time()
+    train_losses = []
+    model.train()
+    for i, (imgs, labels) in enumerate(train_loader):
+        print("train batch " + str(i+1) + "/" + str(len(train_loader)), end="\r", flush=True) 
+        imgs, labels = imgs.to(device), labels.to(device)
+        batch_size = imgs.shape[0]
+        outputs = model(imgs)
+        loss = loss_fn(outputs, labels)
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+        train_losses.append(loss.item())
 
-        # building classifier
-        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        self.classifier = nn.Sequential(
-            nn.Dropout(0.2),
-            nn.Linear(last_channel, num_classes)
-        )
+    scheduler.step()
+    
+    print("                         ", end="\r", flush=True) #delete output from train counter to not interfere with validation counter (probably can be done better)
 
-        # weight initialization
-        for m in self.modules():
-            if isinstance(m, nn.Conv2d):
-                nn.init.kaiming_normal_(m.weight, mode='fan_out')
-                if m.bias is not None:
-                    nn.init.zeros_(m.bias)
-            elif isinstance(m, nn.BatchNorm2d):
-                nn.init.ones_(m.weight)         # 初始化均值为0
-                nn.init.zeros_(m.bias)          # 初始化方差为1
-            elif isinstance(m, nn.Linear):
-                nn.init.normal_(m.weight, 0, 0.01)
-                nn.init.zeros_(m.bias)
+    #validate model
+    with torch.no_grad():
+        model.eval()
+        correct_labels = 0
+        all_labels = 0
+        val_losses = []
+        for i, (imgs, labels) in enumerate(val_loader):
+            print("valid batch " + str(i+1) + "/" + str(len(val_loader)), end="\r", flush=True) 
+            imgs, labels = imgs.to(device), labels.to(device)
+            batch_size = imgs.shape[0]
+            outputs = model(imgs)
+            loss = loss_fn(outputs, labels)
+            val_losses.append(loss.item())
+            _, preds = torch.max(outputs, dim=1) #predictions
+            matched = preds == labels #comparison with ground truth
+            correct_labels += float(torch.sum(matched))
+            all_labels += float(batch_size)
 
-    def forward(self, x):
-        x = self.features(x)
-        x = self.avgpool(x)
-        x = torch.flatten(x, 1)
-        x = self.classifier(x)
-        return x
+        val_accuracy = correct_labels / all_labels #compute top-1 accuracy on validation data 
+    
+    train_loss = np.mean(train_losses)
+    val_loss = np.mean(val_losses)
 
-
-def _make_divisible(ch, divisor=8, min_ch=None):
-    """
-    This function is taken from the original tf repo.
-    It ensures that all layers have a channel number that is divisible by 8
-    It can be seen here:
-    https://github.com/tensorflow/models/blob/master/research/slim/nets/mobilenet/mobilenet.py
-    """
-    if min_ch is None:
-        min_ch = divisor
-    new_ch = max(min_ch, int(ch + divisor / 2) // divisor * divisor)
-    # Make sure that round down does not go down by more than 10%.
-    if new_ch < 0.9 * ch:
-        new_ch += divisor
-    return new_ch
-
-
-if __name__ == '__main__':
-    # 模型实例化
-    epochs = 100
-    batch_size = 64
-    net = MobileNetV2(num_classes=10)
-    # 构造输入层shape==[4,3,224,224]
-    cifar_path = "../data"
-    transform = transforms.Compose(
-        [
-            transforms.Resize(256),  # 将输入图像的较短边调整到 256 像素
-            transforms.CenterCrop(224),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-        ]
-    )
-    trainset = torchvision.datasets.CIFAR10(
-        root=cifar_path, train=True, download=True, transform=transform
-    )
-    testset = torchvision.datasets.CIFAR10(
-        root=cifar_path, train=False, download=True, transform=transform
-    )
-
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size, shuffle=True)
-    # testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=False)
-
-    criterion = torch.nn.CrossEntropyLoss()
-    optimizer = optim.Adam(params=net.parameters(), lr=0.001, betas=[0.9, 0.999], eps=1e-8)
-
-    net.train()
-
-    gpu_start_time = time.time()
-    for epoch in range(epochs):
-        running_loss = 0.0
-        for i, data in enumerate(trainloader, 0):
-            inputs, labels = data[0].to(device), data[1].to(device)  # 将数据移动到 GPU 上
-            optimizer.zero_grad()
-
-            outputs = net(inputs)
-            loss = criterion(outputs, labels)
-            loss.backward()
-            optimizer.step()
-            running_loss += loss.item()
-            if i % 100 == 99:
-                print(f'[{epoch + 1}, {i + 1}] loss: {running_loss / 100}')
-                running_loss = 0.0
+    #save best model so far
+    if val_loss < lowest_val_loss:
+        lowest_val_loss = val_loss
+        torch.save(model.state_dict(), './trained_models/' + model.name() + '_best' + '.pth')
+    
+    end_time = time.time()
+    
+    #print iteration results
+    print("Epoch: %d/%d, lr: %f, train_loss: %f, val_loss: %f, val_acc: %f, time(sec): %f" % (epoch, n_epochs, optimizer.param_groups[0]['lr'], train_loss, val_loss, val_accuracy, end_time - start_time))
