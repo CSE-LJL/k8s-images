@@ -1,7 +1,5 @@
 import os
 import torch
-from pip._internal import main
-main.main(['install', 'jieba'])
 import jieba
 import torch.nn as nn
 from config import Config
