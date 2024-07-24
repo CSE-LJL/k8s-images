@@ -3,6 +3,7 @@ import torch.nn as nn
 from torchstat import stat  # 查看网络参数
 import torchvision
 import torchvision.transforms as transforms
+import time
 
 # --------------------------------- #
 # （1）通道重排
