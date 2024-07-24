@@ -1,7 +1,7 @@
 FROM pytorch/pytorch:2.1.0-cuda11.8-cudnn8-runtime
 RUN python -m pip install --upgrade pip
 RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
-RUN pip install jieba
+RUN python -m pip install jieba
 
 WORKDIR /app
 ENV PYTHONPATH "${PYTHONPATH}:/app"
