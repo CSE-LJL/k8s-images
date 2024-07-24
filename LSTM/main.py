@@ -1,6 +1,6 @@
 from entity import pre_process_text, Classifier, train, evaluate, predict
 from torch.utils.tensorboard import SummaryWriter
-from torchtext.data import BucketIterator
+from torchtext.legacy.data import BucketIterator
 from torch.optim import Adam, lr_scheduler
 from config import Config
 import torch.nn as nn
