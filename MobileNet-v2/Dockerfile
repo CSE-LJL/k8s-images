@@ -6,7 +6,7 @@ COPY models.py /app/models.py
 COPY test.py /app/test.py
 COPY train.py /app/train.py
 RUN mkdir /app/trained_models
-COPY Mobilenet_v3_small_1.0_best.pth /app/trained_models
+COPY Mobilenet_v3_large_1.0_fortest.pth /app/trained_models
 
 RUN pip install torchvision \
     && pip install future==0.18.2
