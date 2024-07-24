@@ -4,7 +4,7 @@ RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 RUN python -m pip install jieba
 
 WORKDIR /app
-ENV PYTHONPATH "${PYTHONPATH}:/app"
+#ENV PYTHONPATH "${PYTHONPATH}:/app"
 RUN mkdir /app/data
 
 COPY dev.csv /app/data
