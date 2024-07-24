@@ -3,7 +3,7 @@ RUN python -m pip install --upgrade pip
 RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 
 WORKDIR /app
-RUN export PYTHONPATH=/app
+ENV PYTHONPATH "${PYTHONPATH}:/app"
 RUN pip install jieba
 RUN mkdir /app/data
 
