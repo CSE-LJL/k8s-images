@@ -24,6 +24,6 @@ COPY log_uniform_sampler.py /app/utils
 COPY proj_adaptive_softmax.py /app/utils
 COPY vocabulary.py /app/utils
 
-CMD ["bash", "/app/getdata.sh", "wikitext-103"]
+RUN bash /app/getdata.sh wikitext-103
 
-ENTRYPOINT ["bash", "/app/run_wt103_base.sh", "train", "--work_dir", "/app/pytorch"]
+RUN bash /app/run_wt103_base.sh train --work_dir /app/pytorch
