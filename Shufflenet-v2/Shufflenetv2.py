@@ -230,7 +230,7 @@ if __name__ == '__main__':
     epochs = 100
     batch_size = 64
     device = 'cuda:1'
-    net = ShuffleNetV2(num_classes=10)
+    net = ShuffleNetV2(num_classes=10).to(device)
     # 构造输入层shape==[4,3,224,224]
     cifar_path = "data/"
     transform = transforms.Compose(
