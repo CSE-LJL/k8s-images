@@ -7,6 +7,7 @@ RUN python -m pip install torchtext==0.10.1
 WORKDIR /app
 #ENV PYTHONPATH "${PYTHONPATH}:/app"
 RUN mkdir /app/data
+RUN mkdir /app/save
 
 COPY dev.csv /app/data
 COPY train.csv /app/data
