@@ -10,7 +10,7 @@ from models import *
 
 #parse arguments
 parser = argparse.ArgumentParser(description='Mobilenet v3 training')
-parser.add_argument('--model', type=str, default='small', help='large or small (small by default)')
+parser.add_argument('--model', type=str, default='large', help='large or small (small by default)')
 parser.add_argument('--width', type=float, default=1.0, help='width multiplier (1.0 by default)')
 parser.add_argument('--iter', type=int, default=20, help='number of iterations to train (20 by default)')
 parser.add_argument('--batch', type=int, default=128, help='batch size (128 by default)')
