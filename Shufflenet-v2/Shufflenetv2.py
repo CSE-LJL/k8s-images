@@ -230,7 +230,7 @@ if __name__ == '__main__':
     batch_size = 64
     net = ShuffleNetV2(num_classes=10)
     # 构造输入层shape==[4,3,224,224]
-    cifar_path = "../data"
+    cifar_path = "data/"
     transform = transforms.Compose(
         [
             transforms.Resize(256),  # 将输入图像的较短边调整到 256 像素
