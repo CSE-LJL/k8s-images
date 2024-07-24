@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from torchstat import stat  # 查看网络参数
-
+from torchvision import transforms
 
 # --------------------------------- #
 # （1）通道重排
