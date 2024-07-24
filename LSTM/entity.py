@@ -6,7 +6,7 @@ from config import Config
 from torchtext import data
 from torchtext.vocab import Vectors, GloVe
 from sklearn.metrics import precision_recall_fscore_support
-from torchtext.data import LabelField, Field, TabularDataset, BucketIterator
+from torchtext.legacy.data import LabelField, Field, TabularDataset, BucketIterator
 
 # 文本预处理
 def pre_process_text():
