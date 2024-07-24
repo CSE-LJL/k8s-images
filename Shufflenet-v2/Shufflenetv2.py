@@ -250,7 +250,7 @@ if __name__ == '__main__':
     # testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=False)
 
     criterion = torch.nn.CrossEntropyLoss()
-    optimizer = optim.Adam(params=net.parameters(), lr=0.001, betas=[0.9, 0.999], eps=1e-8)
+    optimizer = torch.optim.Adam(params=net.parameters(), lr=0.001, betas=[0.9, 0.999], eps=1e-8)
 
     net.train()
 
