@@ -4,6 +4,7 @@ RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 RUN python -m pip install jieba
 RUN python -m pip install torchtext==0.10.1
 RUN python -m pip install scikit-learn==0.24.1
+RUN python -m pip install tensorboard
 
 WORKDIR /app
 #ENV PYTHONPATH "${PYTHONPATH}:/app"
