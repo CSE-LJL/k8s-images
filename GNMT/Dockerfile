@@ -1,8 +1,8 @@
 FROM yangho/tensorflow1.8-gpu:cuda9.0-cudnn7.0.5.15
-RUN python3 -m pip install --upgrade pip
+#RUN python3 -m pip install --upgrade pip
 #RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
-RUN python3 -m pip install numpy
-RUN python3 -m pip install pandas
+RUN pip install numpy
+RUN pip install pandas
 
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
