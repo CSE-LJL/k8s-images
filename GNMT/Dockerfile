@@ -5,21 +5,21 @@ RUN pip install numpy
 RUN pip install pandas
 
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    apt-utils \
-    bash-completion \
-    build-essential \
-    cmake \
-    curl \
-    git \
+#RUN apt-get update && apt-get install -y --no-install-recommends \
+ #   apt-utils \
+  #  bash-completion \
+   # build-essential \
+   # cmake \
+   # curl \
+   # git \
    # libboost-all-dev \
    # libbz2-dev \
    # liblzma-dev \
    # locales \
    # python3-venv \
-    unzip \
-    xz-utils \
-    wget && \
+   # unzip \
+   # xz-utils \
+   # wget && \
     # We need to remove it because it's breaking deepspeech install later with \
     # weird errors about setuptools \
    # apt-get purge -y python3-xdg && \
@@ -27,7 +27,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
    # apt-get install -y --no-install-recommends libopus0 libsndfile1 && \
    # apt install -y  net-tools python3-pip \
     # Try and free some space \
-    rm -rf /var/lib/apt/lists/*
+   # rm -rf /var/lib/apt/lists/*
 
 #RUN python -m pip install numpy
 #RUN pip install pandas
