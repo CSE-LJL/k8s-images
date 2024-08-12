@@ -56,7 +56,7 @@ scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[15, 20, 30], g
 loss_fn = nn.CrossEntropyLoss()
 
 #train on GPU if CUDA is available, else on CPU
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = model.to(device)
 
 #print training information
